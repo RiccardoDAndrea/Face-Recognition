@@ -1,1 +1,1 @@
-reference_img
+plt.show()
