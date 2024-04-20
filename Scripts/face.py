@@ -1,35 +1,53 @@
+# import cv2
+
+# # Load the cascade
+# face_cascade = cv2.CascadeClassifier('/Users/riccardo/Desktop/Repositorys_Github/Python_Face_Recognition/Scripts/models/haarcascade_frontalface_default.xml')
+# # Read the input image
+# img = cv2.imread('/Users/riccardo/Desktop/Repositorys_Github/Python_Face_Recognition/Scripts/data/group_pic_2.jpeg')
+# # Convert into grayscale
+# gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# # Detect faces
+# faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+# # Draw rectangle around the faces
+# for (x, y, w, h) in faces:
+#     cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+# # Display the output
+# cv2.imshow('img', img)
+# cv2.waitKey()
+# cv2.destroyAllWindows()
+
 import cv2
-import sys
 
-cascPath = sys.argv[1]
-faceCascade = cv2.CascadeClassifier(cascPath)
+# Load the cascade
+face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
+# Open the video capture device
 video_capture = cv2.VideoCapture(0)
 
-while True:
-    # Capture frame-by-frame
-    ret, frame = video_capture.read()
-
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    faces = faceCascade.detectMultiScale(
-        gray,
-        scaleFactor=1.1,
-        minNeighbors=5,
-        minSize=(30, 30),
-        flags=cv2.cv.CV_HAAR_SCALE_IMAGE
-    )
-
-    # Draw a rectangle around the faces
+# Function to detect faces and draw bounding boxes
+def detect_bounding_box(vid):
+    gray_image = cv2.cvtColor(vid, cv2.COLOR_BGR2GRAY)
+    faces = face_classifier.detectMultiScale(gray_image, 1.1, 5, minSize=(40, 40))
     for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        cv2.rectangle(vid, (x, y), (x + w, y + h), (0, 255, 0), 4)
+    return faces
 
-    # Display the resulting frame
-    cv2.imshow('Video', frame)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+while True:
+    # Read the frame
+    result, video_frame = video_capture.read()
+    if not result:
+        break
+    
+    # Detect faces
+    faces = detect_bounding_box(video_frame)
+    
+    # Display the frame with bounding boxes
+    cv2.imshow("My Face Detection Project", video_frame)
+    
+    # Exit if 'q' is pressed
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
-# When everything is done, release the capture
+# Release the video capture device and close the windows
 video_capture.release()
 cv2.destroyAllWindows()
