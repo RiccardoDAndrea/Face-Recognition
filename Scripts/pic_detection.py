@@ -1,7 +1,7 @@
 import cv2 
 from matplotlib import pyplot as plt
 
-img = cv2.imread("/Users/riccardo/Desktop/Repositorys_Github/Python_Face_Recognition/Scripts/data/image.jpg")
+img = cv2.imread("/Users/riccardo/Desktop/Repositorys_Github/Python_Face_Recognition/Scripts/data/images/strc1873f5e-ffab-11ee-9a47-1283ec2b8fab.jpg")
 
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
