@@ -4,8 +4,9 @@ from matplotlib import pyplot as plt
 # List of image file paths
 images = [
     "/Users/riccardo/Desktop/Github/Python_Face_Recognition/Scripts/data/Pictures/Face_1.jpeg",
-    "/Users/riccardo/Desktop/Github/Python_Face_Recognition/Scripts/data/Pictures/Face_2.jpeg",
-    "/Users/riccardo/Desktop/Github/Python_Face_Recognition/Scripts/data/Pictures/Face_3.jpeg"
+    "/Users/riccardo/Desktop/Github/Python_Face_Recognition/Scripts/data/Pictures/Face_3.jpeg",
+    "/Users/riccardo/Desktop/Github/Python_Face_Recognition/Scripts/data/Pictures/Face_5.jpeg",
+    "/Users/riccardo/Desktop/Github/Python_Face_Recognition/Scripts/data/Pictures/Face_6.jpeg"
 ]
 
 # Load the cascade classifier for detecting stop signs (assuming stop_data.xml is correct)
