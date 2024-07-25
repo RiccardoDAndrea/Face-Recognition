@@ -22,6 +22,8 @@ import cv2
 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 eye_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 glasses_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye_tree_eyeglasses.xml')
+
+
 # Open the video capture device
 video_capture = cv2.VideoCapture(0)
 
@@ -32,8 +34,6 @@ def detect_bounding_box_of_face(vid):
     for (x, y, w, h) in faces:
         cv2.rectangle(vid, (x, y), (x + w, y + h), (0, 255, 0), 4)
         cv2.putText(vid, 'Face', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
-        if 'Face' in locals():
-            print('Face detected')
 
     return faces
 
@@ -43,21 +43,17 @@ def detect_bounding_box_eye(vid):
     for (x, y, w, h) in eyes:
         cv2.rectangle(vid, (x, y), (x + w, y + h), (0, 255, 0), 4)
         cv2.putText(vid, 'eye', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
-        if 'eye' in locals():
-            print('eye detected')
 
     return eyes
 
 def detect_bounding_box_glasses(vid):
     gray_image = cv2.cvtColor(vid, cv2.COLOR_BGR2GRAY)
-    eyes = eye_classifier.detectMultiScale(gray_image, 1.1, 5, minSize=(40, 40))
-    for (x, y, w, h) in eyes:
+    glasses = eye_classifier.detectMultiScale(gray_image, 1.1, 5, minSize=(40, 40))
+    for (x, y, w, h) in glasses:
         cv2.rectangle(vid, (x, y), (x + w, y + h), (0, 255, 0), 4)
-        cv2.putText(vid, 'eye', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
-        if 'eye' in locals():
-            print('eye detected')
+        cv2.putText(vid, 'glasses', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
 
-    return eyes
+    return glasses
 
 while True:
     # Read the frame
@@ -68,8 +64,9 @@ while True:
         break
     
     # Detect faces
-    eyesq = detect_bounding_box_eye(video_frame)
+    eyes = detect_bounding_box_eye(video_frame)
     faces = detect_bounding_box_of_face(video_frame)
+    glasses = detect_bounding_box_glasses(video_frame)
     
     # Display the frame with bounding boxes
     cv2.imshow("My Face Detection Project", video_frame)
