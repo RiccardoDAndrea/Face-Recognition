@@ -25,11 +25,26 @@ face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fro
 video_capture = cv2.VideoCapture(0)
 
 # Function to detect faces and draw bounding boxes
-def detect_bounding_box(vid):
+def detect_bounding_box_of_face(vid):
     gray_image = cv2.cvtColor(vid, cv2.COLOR_BGR2GRAY)
     faces = face_classifier.detectMultiScale(gray_image, 1.1, 5, minSize=(40, 40))
     for (x, y, w, h) in faces:
         cv2.rectangle(vid, (x, y), (x + w, y + h), (0, 255, 0), 4)
+        cv2.putText(vid, 'Face', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
+        if 'Face' in locals():
+            print('Face detected')
+
+    return faces
+
+def detect_bounding_box_person(vid):
+    gray_image = cv2.cvtColor(vid, cv2.COLOR_BGR2GRAY)
+    faces = face_classifier.detectMultiScale(gray_image, 1.1, 5, minSize=(40, 40))
+    for (x, y, w, h) in faces:
+        cv2.rectangle(vid, (x, y), (x + w, y + h), (0, 255, 0), 4)
+        cv2.putText(vid, 'Face', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
+        if 'Face' in locals():
+            print('Face detected')
+
     return faces
 
 while True:
@@ -39,7 +54,7 @@ while True:
         break
     
     # Detect faces
-    faces = detect_bounding_box(video_frame)
+    faces = detect_bounding_box_of_face(video_frame)
     
     # Display the frame with bounding boxes
     cv2.imshow("My Face Detection Project", video_frame)
