@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 #####
 ## Das Ziel dieses Skript wird in zwei aufgaben unterteilt die erreicht werden sollen
 ## 1. Erkenne die Parkplätze auf dem Bild
@@ -17,43 +18,69 @@ import numpy as np
 
 
 
-path = "Scripts/data/Pictures/Parked cars/Cars-parked-in-parking-lot.jpg"
-path_without_cars = "Scripts/data/Pictures/Parked cars/image.png"
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Bild einlesen
+path_without_cars = "Scripts/data/Pictures/Parked cars/Cars-parked-in-parking-lot.jpg"
 img = cv2.imread(filename=path_without_cars)
 
-gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+# Graustufenbild erstellen
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+# Bild glätten
 kernel_size = 5
-blur_gray = cv2.GaussianBlur(gray,(kernel_size, kernel_size),0)
+blur_gray = cv2.GaussianBlur(gray, (kernel_size, kernel_size), 0)
 
+# Kanten mit Canny-Detektor finden
 low_threshold = 50
 high_threshold = 150
 edges = cv2.Canny(blur_gray, low_threshold, high_threshold)
 
+# Hough-Transformation Parameter
+rho = 1
+theta = np.pi / 180
+threshold = 15
+min_line_length = 50
+max_line_gap = 20
+line_image = np.copy(img) * 0
 
-rho = 1                         # distance resolution in pixels of the Hough grid
-theta = np.pi / 180             # angular resolution in radians of the Hough grid
-threshold = 15                  # minimum number of votes (intersections in Hough grid cell)
-min_line_length = 50            # minimum number of pixels making up a line
-max_line_gap = 20               # maximum gap in pixels between connectable line segments
-line_image = np.copy(img) * 0   # creating a blank to draw lines on
-
-# Run Hough on edge detected image
-# Output "lines" is an array containing endpoints of detected line segments
+# Hough-Transformation anwenden
 lines = cv2.HoughLinesP(edges, rho, theta, threshold, np.array([]),
-                    min_line_length, max_line_gap)
+                        min_line_length, max_line_gap)
 
+# Linien auf das leere Bild zeichnen
 for line in lines:
-    for x1,y1,x2,y2 in line:
-        cv2.line(line_image,(x1,y1),(x2,y2),(255,0,0),5)
+    for x1, y1, x2, y2 in line:
+        cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 5)
 
-
+# Kombinieren der Linien mit dem Originalbild
 lines_edges = cv2.addWeighted(img, 0.8, line_image, 1, 0)
 
+# Auto-Klassifikator laden
+car_Classifier = cv2.CascadeClassifier("Scripts/models/haarcascade_car.xml")
+detected_cars = car_Classifier.detectMultiScale(img, minSize=(20, 20))
 
+# Autos auf dem kombinierten Bild markieren
+img_rgb = cv2.cvtColor(lines_edges, cv2.COLOR_BGR2RGB)
 
+amount = len(detected_cars)
 
+if amount != 0:
+    for (x, y, width, height) in detected_cars:
+        offset = 10             # die abstand der Linien in dem Quadrat
+        thickness = 5
+        cv2.line(img_rgb, (x, y), (x + width // 2 - offset, y), (0, 255, 0), thickness)
+        cv2.line(img_rgb, (x + width // 2 + offset, y), (x + width, y), (0, 255, 0), thickness)
+        cv2.line(img_rgb, (x, y + height), (x + width // 2 - offset, y + height), (0, 255, 0), thickness)
+        cv2.line(img_rgb, (x + width // 2 + offset, y + height), (x + width, y + height), (0, 255, 0), thickness)
+        cv2.line(img_rgb, (x, y), (x, y + height // 2 - offset), (0, 255, 0), thickness)
+        cv2.line(img_rgb, (x, y + height // 2 + offset), (x, y + height), (0, 255, 0), thickness)
+        cv2.line(img_rgb, (x + width, y), (x + width, y + height // 2 - offset), (0, 255, 0), thickness)
+        cv2.line(img_rgb, (x + width, y + height // 2 + offset), (x + width, y + height), (0, 255, 0), thickness)
 
-cv2.imshow("Result", lines_edges)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# Ergebnis anzeigen
+plt.subplot(1, 1, 1)
+plt.imshow(img_rgb)
+plt.show()
